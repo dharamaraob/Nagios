@@ -152,6 +152,7 @@ RUN cd /opt                                                                     
     git clone https://github.com/JasonRivers/nagios-plugins.git  JR-Nagios-Plugins  && \
     git clone https://github.com/justintime/nagios-plugins.git   JE-Nagios-Plugins  && \
     git clone https://github.com/HariSekhon/nagios-plugins.git   HS-Nagios-Plugins  && \
+    make                                                                            && \
     chmod +x /opt/WL-Nagios-Plugins/check*                                          && \
     chmod +x /opt/JE-Nagios-Plugins/check_mem/check_mem.pl                          && \
     chmod +x /opt/HS-Nagios-Plugins/check_mesos*				    && \
@@ -194,6 +195,7 @@ COPY  /nagios/servers/localhost.cfg /opt/nagios/etc/objects/localhost.cfg
 COPY  /nagios/objects/contacts.cfg /opt/nagios/etc/objects/contacts.cfg
 COPY  /nagios/servers/AllNodes.cfg /opt/nagios/etc/servers/AllNodes.cfg
 COPY  /nagios/servers/mesosmasters.cfg /opt/nagios/etc/servers/mesosmasters.cfg
+COPY  /nagios/servers/slavemetrics.cfg /opt/nagios/etc/servers/slavemetrics.cfg
 COPY  /rsyslog/rsyslog.conf /etc/rsyslog.conf
 
 RUN echo "use_timezone=${NAGIOS_TIMEZONE}" >> /opt/nagios/etc/nagios.cfg
