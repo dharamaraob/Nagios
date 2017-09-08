@@ -1,5 +1,5 @@
 FROM ubuntu:16.04
-MAINTAINER Jason Rivers <jason@jasonrivers.co.uk>
+MAINTAINER Dharama Rao <dharmaraobala@gmail.com>
 
 ENV NAGIOS_HOME            /opt/nagios
 ENV NAGIOS_USER            nagios
@@ -151,10 +151,13 @@ RUN cd /opt                                                                     
     git clone https://github.com/willixix/naglio-plugins.git     WL-Nagios-Plugins  && \
     git clone https://github.com/JasonRivers/nagios-plugins.git  JR-Nagios-Plugins  && \
     git clone https://github.com/justintime/nagios-plugins.git   JE-Nagios-Plugins  && \
+    git clone https://github.com/HariSekhon/nagios-plugins.git   HS-Nagios-Plugins  && \
     chmod +x /opt/WL-Nagios-Plugins/check*                                          && \
     chmod +x /opt/JE-Nagios-Plugins/check_mem/check_mem.pl                          && \
+    chmod +x /opt/HS-Nagios-Plugins/check_mesos*				    && \
     cp /opt/JE-Nagios-Plugins/check_mem/check_mem.pl /opt/nagios/libexec/           && \
-    cp /opt/nagios/libexec/utils.sh /opt/JR-Nagios-Plugins/
+    cp /opt/nagios/libexec/utils.sh /opt/JR-Nagios-Plugins/			    && \
+    cp /opt/HS-Nagios-Plugins/*.* /opt/nagios/libexec/
 
 
 RUN sed -i.bak 's/.*\=www\-data//g' /etc/apache2/envvars
@@ -183,13 +186,15 @@ RUN rm -rf /etc/rsyslog.d /etc/rsyslog.conf
 
 RUN rm -rf /etc/sv/getty-5
 
-ADD nagios/nagios.cfg /opt/nagios/etc/nagios.cfg
-ADD nagios/cgi.cfg /opt/nagios/etc/cgi.cfg
-ADD nagios/templates.cfg /opt/nagios/etc/objects/templates.cfg
-ADD nagios/commands.cfg /opt/nagios/etc/objects/commands.cfg
-ADD nagios/localhost.cfg /opt/nagios/etc/objects/localhost.cfg
-
-ADD rsyslog/rsyslog.conf /etc/rsyslog.conf
+COPY  /nagios/nagios.cfg /opt/nagios/etc/nagios.cfg
+COPY  /nagios/cgi.cfg /opt/nagios/etc/cgi.cfg
+COPY  /nagios/templates.cfg /opt/nagios/etc/objects/templates.cfg
+COPY  /nagios/objects/commands.cfg /opt/nagios/etc/objects/commands.cfg
+COPY  /nagios/servers/localhost.cfg /opt/nagios/etc/objects/localhost.cfg
+COPY  /nagios/objects/contacts.cfg /opt/nagios/etc/objects/contacts.cfg
+COPY  /nagios/servers/AllNodes.cfg /opt/nagios/etc/servers/AllNodes.cfg
+COPY  /nagios/servers/mesosmasters.cfg /opt/nagios/etc/servers/mesosmasters.cfg
+COPY  /rsyslog/rsyslog.conf /etc/rsyslog.conf
 
 RUN echo "use_timezone=${NAGIOS_TIMEZONE}" >> /opt/nagios/etc/nagios.cfg
 
@@ -205,11 +210,11 @@ RUN a2enmod session         && \
     a2enmod auth_form       && \
     a2enmod request
 
-ADD nagios.init /etc/sv/nagios/run
-ADD apache.init /etc/sv/apache/run
-ADD postfix.init /etc/sv/postfix/run
-ADD rsyslog.init /etc/sv/rsyslog/run
-ADD start.sh /usr/local/bin/start_nagios
+COPY  /nagios.init /etc/sv/nagios/run
+COPY  /apache.init /etc/sv/apache/run
+COPY  /postfix.init /etc/sv/postfix/run
+COPY  /rsyslog.init /etc/sv/rsyslog/run
+COPY  /start.sh /usr/local/bin/start_nagios
 RUN chmod +x /usr/local/bin/start_nagios
 
 # enable all runit services
